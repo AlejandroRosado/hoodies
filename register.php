@@ -54,8 +54,10 @@ input[type="submit"]:hover {
 </head>
 <body>
     <h1>Registro</h1>
-
     <form action="process_registration.php" method="POST">
+        <label for="nombre_apellido">Nombre y Apellido:</label>
+        <input type="text" id="nombre_apellido" name="nombre_apellido" required>
+        <br>
         <label for="username">Nombre de usuario:</label>
         <input type="text" id="username" name="username" required>
         <br>

@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Autenticación exitosa, determinar destino
                 if ($row['Administrador'] == 1) {
                     // Usuario es administrador, redireccionar a página de admin
-                    header('Location: pagina_admin.php');
+                    header('Location: admin.php');
                 } else {
                     // Usuario no es administrador, redireccionar a objetos.php
                     header('Location: objetos.php');
