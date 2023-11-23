@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } else {
                 // Autenticación fallida
-                echo 'Credenciales incorrectas. Inténtalo de nuevo.';
+                echo 'Contraseña incorrecta. Inténtalo de nuevo.';
             }
         } else {
             // Usuario no encontrado

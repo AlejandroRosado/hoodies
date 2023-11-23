@@ -73,6 +73,45 @@ if ($conn->connect_error) {
             } else {
                 echo "<p>No se proporcionaron datos para modificar los permisos.</p>";
             }
+            if (isset($_POST['delete_detalle'])) {
+                $delete_detalle_id = $_POST['delete_detalle_id'];
+    
+                // Realizar la eliminación en la tabla de detalles de pedidos
+                $eliminar_detalle_query = "DELETE FROM detalles_pedido WHERE id = $delete_detalle_id";
+    
+                if ($conn->query($eliminar_detalle_query) === TRUE) {
+                    echo "<p>Detalle de pedido eliminado correctamente.</p>";
+                    
+                } else {
+                    echo "<p>Error al eliminar el detalle de pedido: " . $conn->error . "</p>";
+                }
+            }
+            if (isset($_POST['delete_pedido'])) {
+                $delete_pedido_id = $_POST['delete_pedido_id'];
+    
+                // Realizar la eliminación en la tabla de pedidos
+                $eliminar_pedido_query = "DELETE FROM pedidos WHERE id = $delete_pedido_id";
+    
+                if ($conn->query($eliminar_pedido_query) === TRUE) {
+                    echo "<p>Pedido eliminado correctamente.</p>";
+                    
+                } else {
+                    echo "<p>Error al eliminar el pedido: " . $conn->error . "</p>";
+                }
+            }
+            if (isset($_POST['delete_product'])) {
+                $delete_product_id = $_POST['delete_product_id'];
+    
+                // Realizar la eliminación en la tabla de productos
+                $eliminar_producto_query = "DELETE FROM productos WHERE id = $delete_product_id";
+    
+                if ($conn->query($eliminar_producto_query) === TRUE) {
+                    echo "<p>Producto eliminado correctamente.</p>";
+                    header("Refresh:0");
+                } else {
+                    echo "<p>Error al eliminar el producto: " . $conn->error . "</p>";
+                }
+            }
 // Consulta para obtener todos los usuarios
 $usuarios_query = "SELECT * FROM usuarios";
 $usuarios_result = $conn->query($usuarios_query);
@@ -90,9 +129,49 @@ $conn->close();
 <head>
     <title>Página de Administrador</title>
     <style>
-        form{
-            margin-bottom: 0px;
-        }
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+form {
+    margin-bottom: 0px;
+}
+
+button {
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+#formulario {
+    margin-top: 20px;
+}
+
     </style>
 </head>
 <body>
@@ -221,19 +300,7 @@ $conn->close();
         }
 
         // Procesamiento de eliminación de productos
-        if (isset($_POST['delete_product'])) {
-            $delete_product_id = $_POST['delete_product_id'];
-
-            // Realizar la eliminación en la tabla de productos
-            $eliminar_producto_query = "DELETE FROM productos WHERE id = $delete_product_id";
-
-            if ($conn->query($eliminar_producto_query) === TRUE) {
-                echo "<p>Producto eliminado correctamente.</p>";
-                header("Refresh:0");
-            } else {
-                echo "<p>Error al eliminar el producto: " . $conn->error . "</p>";
-            }
-        }
+        
 
         // Cerrar la conexión a la base de datos
         $conn->close();
@@ -281,19 +348,7 @@ $conn->close();
         }
 
         // Procesamiento de eliminación de pedidos
-        if (isset($_POST['delete_pedido'])) {
-            $delete_pedido_id = $_POST['delete_pedido_id'];
-
-            // Realizar la eliminación en la tabla de pedidos
-            $eliminar_pedido_query = "DELETE FROM pedidos WHERE id = $delete_pedido_id";
-
-            if ($conn->query($eliminar_pedido_query) === TRUE) {
-                echo "<p>Pedido eliminado correctamente.</p>";
-                
-            } else {
-                echo "<p>Error al eliminar el pedido: " . $conn->error . "</p>";
-            }
-        }
+        
 
         // Cerrar la conexión a la base de datos
         $conn->close();
@@ -343,19 +398,7 @@ $conn->close();
         }
 
         // Procesamiento de eliminación de detalles de pedidos
-        if (isset($_POST['delete_detalle'])) {
-            $delete_detalle_id = $_POST['delete_detalle_id'];
-
-            // Realizar la eliminación en la tabla de detalles de pedidos
-            $eliminar_detalle_query = "DELETE FROM detalles_pedido WHERE id = $delete_detalle_id";
-
-            if ($conn->query($eliminar_detalle_query) === TRUE) {
-                echo "<p>Detalle de pedido eliminado correctamente.</p>";
-                
-            } else {
-                echo "<p>Error al eliminar el detalle de pedido: " . $conn->error . "</p>";
-            }
-        }
+        
 
         // Cerrar la conexión a la base de datos
         $conn->close();

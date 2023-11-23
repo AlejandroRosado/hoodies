@@ -1,4 +1,3 @@
-
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = isset($_POST['username']) ? $_POST['username'] : '';
@@ -27,10 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Conexión fallida: " . $conn->connect_error);
     }
 
-    // Consulta para insertar un nuevo usuario
-    $admin_value = 0; // Valor predeterminado para el campo Administrador
+    // Generar el hash de la contraseña
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $insert_query = "INSERT INTO usuarios (nombre, Usuario, contraseña, Administrador) VALUES ('$nombre_apellido', '$username', '$password', $admin_value)";
+    // Consulta para insertar un nuevo usuario con la contraseña cifrada
+    $admin_value = 0; // Valor predeterminado para el campo Administrador
+    $insert_query = "INSERT INTO usuarios (nombre, Usuario, contraseña, Administrador) VALUES ('$nombre_apellido', '$username', '$hashed_password', $admin_value)";
 
     if ($conn->query($insert_query) === TRUE) {
         echo 'Registro exitoso. Ahora puedes iniciar sesión.';
