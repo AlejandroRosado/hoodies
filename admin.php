@@ -27,11 +27,7 @@ if ($conn->connect_error) {
         } else {
             echo "<p>Error al agregar usuario: " . $conn->error . "</p>";
         }
-
-
     }
-
-
             // Procesamiento de eliminación
             if (isset($_POST['delete_user'])) {
                 $delete_user_id = $_POST['delete_user_id'];
@@ -53,27 +49,30 @@ if ($conn->connect_error) {
     
 
             }
-        if (isset($_POST['modificar']) && isset($_POST['estadoActual'])){
-            $modificar = $_POST['modificar'];
-    
-                // Realizar la eliminación en la tabla de usuarios
+            if (isset($_POST['modificar']) && isset($_POST['estadoActual']) && isset($_POST['cambiar_permisos'])) {
+                $modificar = $_POST['modificar'];
+                $estado_actual = $_POST['estadoActual'];
+                
+                // Cambiar el valor de Administrador de 0 a 1 o de 1 a 0
+                $nuevo_estado = ($estado_actual == 0) ? 1 : 0;
+            
                 $conn = new mysqli("localhost", "root", "", "trabajo");
                 if ($conn->connect_error) {
                     die("Conexión fallida: " . $conn->connect_error);
                 }
-
-                $modificar_query = "UPDATE usuarios SET Administrador = $valor WHERE id = $modificar";
-    
+            
+                $modificar_query = "UPDATE usuarios SET Administrador = $nuevo_estado WHERE id = $modificar";
+            
                 if ($conn->query($modificar_query) === TRUE) {
-                    echo "<p>Usuario eliminado correctamente.</p>";
+                    echo "<p>Permisos modificados correctamente.</p>";
                 } else {
-                    echo "<p>Error al eliminar usuario: " . $conn->error . "</p>";
+                    echo "<p>Error al modificar los permisos del usuario: " . $conn->error . "</p>";
                 }
-        }
-
-
-
-
+            
+                //$conn->close();
+            } else {
+                echo "<p>No se proporcionaron datos para modificar los permisos.</p>";
+            }
 // Consulta para obtener todos los usuarios
 $usuarios_query = "SELECT * FROM usuarios";
 $usuarios_result = $conn->query($usuarios_query);
@@ -97,14 +96,8 @@ $conn->close();
     </style>
 </head>
 <body>
-
-
-
 <?php
-
     ?>
-
-
     <h1>Tabla de Usuarios</h1>
     <table border="1">
         <tr>
@@ -136,6 +129,7 @@ $conn->close();
                         <form method='post'>
                             <input type='hidden' name='modificar' value='" . $row["id"] . "'>
                             <input type='hidden' name='estadoActual' value='" . $row["Administrador"] . "'>
+                            <input type='hidden' name='cambiar_permisos' value='1'>
                             <input type='submit' value='Permisos'>
                         </form>
                     </td>";
@@ -148,11 +142,12 @@ $conn->close();
         ?>
         
     </table>
-
-        <!-- Botón para agregar usuario -->
+    <td>
+    
+</td>
+       
     <button onclick="mostrarFormulario()">Añadir Usuario</button>
 
-    <!-- Formulario para agregar usuario (inicialmente oculto) -->
     <div id="formulario" style="display: none;">
         <h2>Agregar Nuevo Usuario</h2>
         <form method="post">
@@ -186,17 +181,33 @@ $conn->close();
     <h1>Tabla de Productos</h1>
     <table border="1">
         <tr>
+            <th>ID</th>
             <th>Nombre</th>
+            <th>Descripción</th>
             <th>Precio</th>
+            <th>Imagen</th>
             <th>Acción</th>
         </tr>
         <?php
+        // Conexión a la base de datos
+        $conn = new mysqli("localhost", "root", "", "trabajo");
+        if ($conn->connect_error) {
+            die("Conexión fallida: " . $conn->connect_error);
+        }
+
+        // Consulta para obtener todos los productos
+        $productos_query = "SELECT * FROM productos";
+        $productos_result = $conn->query($productos_query);
+
         // Mostrar datos de la tabla de productos
         if ($productos_result->num_rows > 0) {
             while ($row = $productos_result->fetch_assoc()) {
                 echo "<tr>";
+                echo "<td>" . $row["id"] . "</td>";
                 echo "<td>" . $row["nombre"] . "</td>";
+                echo "<td>" . $row["descripcion"] . "</td>";
                 echo "<td>" . $row["precio"] . "</td>";
+                echo "<td><img src='" . $row["imagen"] . "' alt='Imagen de " . $row["nombre"] . "' width='100'></td>";
                 echo "<td>
                     <form method='post'>
                         <input type='hidden' name='delete_product_id' value='" . $row["id"] . "'>
@@ -206,7 +217,7 @@ $conn->close();
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='3'>No hay productos</td></tr>";
+            echo "<tr><td colspan='6'>No hay productos</td></tr>";
         }
 
         // Procesamiento de eliminación de productos
@@ -214,23 +225,145 @@ $conn->close();
             $delete_product_id = $_POST['delete_product_id'];
 
             // Realizar la eliminación en la tabla de productos
-            $conn = new mysqli("localhost", "root", "", "trabajo");
-            if ($conn->connect_error) {
-                die("Conexión fallida: " . $conn->connect_error);
-            }
+            $eliminar_producto_query = "DELETE FROM productos WHERE id = $delete_product_id";
 
-            // Consulta para eliminar el producto
-            $eliminar_query = "DELETE FROM productos WHERE id = $delete_product_id";
-
-            if ($conn->query($eliminar_query) === TRUE) {
+            if ($conn->query($eliminar_producto_query) === TRUE) {
                 echo "<p>Producto eliminado correctamente.</p>";
+                header("Refresh:0");
             } else {
-                echo "<p>Error al eliminar producto: " . $conn->error . "</p>";
+                echo "<p>Error al eliminar el producto: " . $conn->error . "</p>";
             }
-
-            $conn->close();
         }
+
+        // Cerrar la conexión a la base de datos
+        $conn->close();
         ?>
     </table>
+
+    <h1>Tabla de Pedidos</h1>
+    <table border="1">
+        <tr>
+            <th>ID Pedido</th>
+            <th>ID Cliente</th>
+            <th>Fecha Pedido</th>
+            <th>Total</th>
+            <th>Acción</th>
+        </tr>
+        <?php
+        // Conexión a la base de datos
+        $conn = new mysqli("localhost", "root", "", "trabajo");
+        if ($conn->connect_error) {
+            die("Conexión fallida: " . $conn->connect_error);
+        }
+
+        // Consulta para obtener todos los pedidos
+        $pedidos_query = "SELECT * FROM pedidos";
+        $pedidos_result = $conn->query($pedidos_query);
+
+        // Mostrar datos de la tabla de pedidos
+        if ($pedidos_result->num_rows > 0) {
+            while ($row = $pedidos_result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $row["id"] . "</td>";
+                echo "<td>" . $row["cliente_id"] . "</td>";
+                echo "<td>" . $row["fecha_pedido"] . "</td>";
+                echo "<td>" . $row["total"] . "</td>";
+                echo "<td>
+                    <form method='post'>
+                        <input type='hidden' name='delete_pedido_id' value='" . $row["id"] . "'>
+                        <input type='submit' name='delete_pedido' value='Eliminar'>
+                    </form>
+                </td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='5'>No hay pedidos</td></tr>";
+        }
+
+        // Procesamiento de eliminación de pedidos
+        if (isset($_POST['delete_pedido'])) {
+            $delete_pedido_id = $_POST['delete_pedido_id'];
+
+            // Realizar la eliminación en la tabla de pedidos
+            $eliminar_pedido_query = "DELETE FROM pedidos WHERE id = $delete_pedido_id";
+
+            if ($conn->query($eliminar_pedido_query) === TRUE) {
+                echo "<p>Pedido eliminado correctamente.</p>";
+                
+            } else {
+                echo "<p>Error al eliminar el pedido: " . $conn->error . "</p>";
+            }
+        }
+
+        // Cerrar la conexión a la base de datos
+        $conn->close();
+        ?>
+    </table>
+    
+    <h1>Tabla de Detalles de Pedidos</h1>
+    <table border="1">
+        <tr>
+            <th>ID Detalle</th>
+            <th>ID Pedido</th>
+            <th>ID Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Acción</th>
+        </tr>
+        <?php
+        // Conexión a la base de datos
+        $conn = new mysqli("localhost", "root", "", "trabajo");
+        if ($conn->connect_error) {
+            die("Conexión fallida: " . $conn->connect_error);
+        }
+
+        // Consulta para obtener todos los detalles de pedidos
+        $detalles_query = "SELECT * FROM detalles_pedido";
+        $detalles_result = $conn->query($detalles_query);
+
+        // Mostrar datos de la tabla de detalles de pedidos
+        if ($detalles_result->num_rows > 0) {
+            while ($row = $detalles_result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $row["id"] . "</td>";
+                echo "<td>" . $row["pedido_id"] . "</td>";
+                echo "<td>" . $row["producto_id"] . "</td>";
+                echo "<td>" . $row["cantidad"] . "</td>";
+                echo "<td>" . $row["precio_unitario"] . "</td>";
+                echo "<td>
+                    <form method='post'>
+                        <input type='hidden' name='delete_detalle_id' value='" . $row["id"] . "'>
+                        <input type='submit' name='delete_detalle' value='Eliminar'>
+                    </form>
+                </td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='6'>No hay detalles de pedidos</td></tr>";
+        }
+
+        // Procesamiento de eliminación de detalles de pedidos
+        if (isset($_POST['delete_detalle'])) {
+            $delete_detalle_id = $_POST['delete_detalle_id'];
+
+            // Realizar la eliminación en la tabla de detalles de pedidos
+            $eliminar_detalle_query = "DELETE FROM detalles_pedido WHERE id = $delete_detalle_id";
+
+            if ($conn->query($eliminar_detalle_query) === TRUE) {
+                echo "<p>Detalle de pedido eliminado correctamente.</p>";
+                
+            } else {
+                echo "<p>Error al eliminar el detalle de pedido: " . $conn->error . "</p>";
+            }
+        }
+
+        // Cerrar la conexión a la base de datos
+        $conn->close();
+        ?>
+    </table>
+    <br><br><br>
+    <form method="get" action="login.php">
+        <button type="submit">Volver a la página de inicio de sesión</button>
+    </form>
 </body>
 </html>

@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = isset($_POST['username']) ? $_POST['username'] : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
@@ -15,17 +17,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die("Conexión fallida: " . $conn->connect_error);
         }
 
-        // Consulta simple sin preparación (vulnerable a inyección SQL)
-        $query = "SELECT Usuario, Contraseña, Administrador FROM usuarios WHERE Usuario = '$username'";
+        // Consulta para seleccionar ID junto con el nombre de usuario y contraseña
+        $query = "SELECT id, Usuario, Contraseña, Administrador FROM usuarios WHERE Usuario = '$username'";
         $result = $conn->query($query);
 
         // Verificar si se encontró un usuario
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
 
-            // Verificar la contraseña
             if ($row['Contraseña'] === $password) {
-                // Autenticación exitosa, determinar destino
+                // Autenticación exitosa
+                $_SESSION['user_id'] = $row['id']; // Guardar el ID del usuario en la sesión
+                $_SESSION['username'] = $username; // Guardar el nombre de usuario en la sesión si es necesario
+
+                // Redireccionar según el tipo de usuario
                 if ($row['Administrador'] == 1) {
                     // Usuario es administrador, redireccionar a página de admin
                     header('Location: admin.php');

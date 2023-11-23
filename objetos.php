@@ -40,10 +40,11 @@
     <?php
     session_start();
 
-    function addToCart($productName, $productPrice) {
-        $_SESSION['cart'][] = array('name' => $productName, 'price' => $productPrice);
+    function addToCart($productId, $productName, $productPrice) {
+        $_SESSION['cart'][] = array('id' => $productId, 'name' => $productName, 'price' => $productPrice);
         $_SESSION['total'] = isset($_SESSION['total']) ? $_SESSION['total'] + $productPrice : $productPrice;
     }
+    
 
 
     function removeFromCart($index) {
@@ -56,9 +57,10 @@
 
 
     if (isset($_GET['add'])) {
-        $productName = $_GET['add']['name'];
-        $productPrice = floatval($_GET['add']['price']);
-        addToCart($productName, $productPrice);
+        $productId = $_GET['add']['id']; // Obtener el ID del producto
+        $productName = $_GET['add']['name']; // Obtener el nombre del producto
+        $productPrice = floatval($_GET['add']['price']); // Obtener el precio del producto
+        addToCart($productId, $productName, $productPrice);
     }
 
 
@@ -83,37 +85,28 @@
             ?>
             <li>Total: $<?= number_format($total, 2) ?></li>
         </ul>
+        <form action="guardar_pedido.php" method="POST">
+            <input type="submit" value="Guardar Pedido">
+        </form>
+
     </div>
     
     <?php
         // conecto a la bbdd
                 $conn = new mysqli("localhost","root","","trabajo");
         // select * from productos
-                $sql = "select * from productos";
-        // un bucle que por cada producto me muestre este esquma
-            $result = $conn->query($sql);
+                $sql = "SELECT id, imagen, precio FROM productos";
+                $result = $conn->query($sql);
 
-            while ($row = $result->fetch_assoc()) {
-                echo "<div class='product'>";
-                    echo "<img src='";
-                    echo $row['imagen'];
-                    echo "' alt='Producto ";
-                    echo $row['id'];
-                    echo "'>";
-                echo "<h2>Producto ";
-                echo $row['id'];
-                echo "</h2>";
-                    echo "<p>Precio: $" ;
-                    echo $row['precio'];
-                    echo "</p>";
-                echo "<a href='?add[name]=Producto%20";
-                echo $row['id'];
-                echo "&add[price]=";
-                echo  $row['precio'];
-                echo "'>Añadir al Carrito</a>";
-                echo "</div>";
-            }
-           
+                while ($row = $result->fetch_assoc()) {
+                    echo "<div class='product'>";
+                    echo "<img src='" . $row['imagen'] . "' alt='Producto " . $row['id'] . "'>";
+                    echo "<h2>Producto " . $row['id'] . "</h2>";
+                    echo "<p>Precio: $" . $row['precio'] . "</p>";
+                    echo "<a href='?add[id]=" . $row['id'] . "&add[name]=Producto%20" . $row['id'] . "&add[price]=" .  $row['precio'] . "'>Añadir al Carrito</a>";
+                    echo "</div>";
+                }
+                
             $conn->close();
     ?>
 </body>
