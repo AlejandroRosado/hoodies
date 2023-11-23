@@ -26,6 +26,53 @@ if (isset($_SESSION['user_id'])) {
         $detalles_result = $conn->query($detalles_query);
 
         // Mostrar los detalles del pedido
+        echo "<style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                margin: 20px;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            p {
+                text-align: center;
+                font-size: 18px;
+            }
+
+            ul {
+                list-style-type: none;
+                padding: 0;
+                text-align: center;
+            }
+
+            li {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            form {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            input[type='submit'] {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            input[type='submit']:hover {
+                background-color: #45a049;
+            }
+        </style>";
+
         echo "<h1>Detalle de tu pedido</h1>";
         echo "<p>ID del pedido: " . $pedido['id'] . "</p>";
         echo "<p>Fecha del pedido: " . $pedido['fecha_pedido'] . "</p>";

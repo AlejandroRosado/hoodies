@@ -129,9 +129,49 @@ $conn->close();
 <head>
     <title>Página de Administrador</title>
     <style>
-        form{
-            margin-bottom: 0px;
-        }
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+form {
+    margin-bottom: 0px;
+}
+
+button {
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+#formulario {
+    margin-top: 20px;
+}
+
     </style>
 </head>
 <body>
